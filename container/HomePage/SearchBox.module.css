@@ -1,0 +1,23 @@
+@media only screen and (max-width: 600px) {
+  .custom_search_box {
+    width: calc(100% - 1rem);
+    /* max-width: 250px; */
+    /* opacity: 0.9; */
+    z-index: 5;
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .custom_search_box {
+    width: calc(100% - 2rem);
+    max-width: 500px;
+    /* opacity: 0.9; */
+    z-index: 5;
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+  }
+}
