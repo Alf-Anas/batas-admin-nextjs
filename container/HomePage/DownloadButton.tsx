@@ -4,8 +4,10 @@ import { useContext, useState } from "react";
 import { MainContext } from ".";
 import { DownloadOutlined } from "@ant-design/icons";
 import { downloadFile } from "@/utils";
-const shpwrite = require("shp-write");
-const tokml = require("tokml");
+// @ts-ignore
+import shpwrite from "shp-write";
+// @ts-ignore
+import tokml from "tokml";
 
 const TYPE_DOWNLOAD = {
   GEOJSON: "GeoJSON",
@@ -21,9 +23,11 @@ const LIST_TYPE_DOWNLOAD = [
 export default function DownloadButton() {
   const { geojson, selected } = useContext(MainContext);
   const [openModal, setOpenModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [typeDownload, setTypeDownload] = useState(TYPE_DOWNLOAD.GEOJSON);
 
   function onDownloadFile() {
+    setIsDownloading(true);
     if (typeDownload === TYPE_DOWNLOAD.GEOJSON) {
       downloadFile(
         JSON.stringify(geojson),
@@ -40,8 +44,14 @@ export default function DownloadButton() {
           line: selected.properties.NAMA + "_LN",
         },
       };
-
-      shpwrite.download(geojson, options);
+      const shpZip = shpwrite.zip(geojson, options);
+      downloadFile(
+        shpZip,
+        "data:text/plain;base64,",
+        selected.properties.NAMA,
+        "zip",
+        false
+      );
     } else if (typeDownload === TYPE_DOWNLOAD.KML) {
       const kml = tokml(geojson, {
         name: "nama",
@@ -49,6 +59,9 @@ export default function DownloadButton() {
       });
       downloadFile(kml, "text/plain", selected.properties.NAMA, "kml");
     }
+    setTimeout(() => {
+      setIsDownloading(false);
+    }, 1500);
   }
 
   return (
@@ -70,6 +83,7 @@ export default function DownloadButton() {
         onOk={onDownloadFile}
         onCancel={() => setOpenModal(false)}
         okText="Download"
+        confirmLoading={isDownloading}
       >
         <Typography.Title level={5}>File Type : </Typography.Title>
         <Radio.Group

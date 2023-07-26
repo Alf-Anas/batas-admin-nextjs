@@ -16,11 +16,12 @@ export function downloadFile(
   eData: any,
   type: string,
   fileName: string,
-  fileType: string
+  fileType: string,
+  createBlob = true
 ) {
   if (!eData) return;
-  const mBlob = new Blob([eData], { type: type });
-  const fileObjURL = URL.createObjectURL(mBlob);
+  const mBlob = createBlob ? new Blob([eData], { type: type }) : null;
+  const fileObjURL = mBlob ? URL.createObjectURL(mBlob) : `${type}${eData}`;
   if (typeof document !== "undefined") {
     const el = document.createElement("a");
     el.setAttribute("href", fileObjURL);

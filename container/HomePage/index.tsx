@@ -52,10 +52,8 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!apiData.data) return;
-    console.log(apiData.data);
     setPolygons(getValObject(apiData.data, "data", []));
     const size = new TextEncoder().encode(JSON.stringify(apiData.data)).length;
-    console.log("SIZE", size / 1024 / 1024, "MB");
   }, [apiData.data]);
 
   return (

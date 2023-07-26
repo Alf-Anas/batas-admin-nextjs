@@ -150,7 +150,6 @@ export default function MainMap({
         LAYER_SRC.ADMIN_CENTROID
       );
       if (adminSource) {
-        // const listCentroid: any[] = [];
         const listPolygon = polygons.map((item) => {
           const polygon = WKTParse(getValObject(item, "WKT_GEOMETRY", ""));
           const { WKT_GEOMETRY, ogc_fid, ...props } = item;
@@ -165,7 +164,6 @@ export default function MainMap({
           type: "FeatureCollection",
           features: listPolygon,
         };
-        console.log(mData);
         adminSource
           // @ts-ignore
           .setData(mData);
@@ -182,7 +180,6 @@ export default function MainMap({
             type: "FeatureCollection",
             features: listCentroid,
           };
-          console.log(mDataPoint);
           adminCentroidSource
             // @ts-ignore
             .setData(mDataPoint);
