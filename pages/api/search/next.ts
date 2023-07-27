@@ -1,6 +1,10 @@
+/**
+ * EXAMPLE IF USING NODE JS SERVER
+ */
+
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getBBOXDB } from "../utils/searchGeoJSON";
 import { FEATURE_TYPE, getLevelTable, safeString } from "../utils";
-import { API_BASE_URL } from "@/constant/env";
 
 type Meta = {
   count: number;
@@ -32,7 +36,8 @@ export default async function handler(
       return;
     }
 
-    let columnName: string = "";
+    const mDB: any = await getBBOXDB();
+    let queryDB: string = "";
     const tableName = getLevelTable(thisLevel);
     if (!tableName) {
       res.status(422).json({
@@ -43,16 +48,16 @@ export default async function handler(
     }
     switch (thisType.toLowerCase()) {
       case FEATURE_TYPE.PROV.toLowerCase():
-        columnName = "provinsi";
+        queryDB = `SELECT * FROM ${tableName} WHERE "provinsi" = "${fid}"`;
         break;
       case FEATURE_TYPE.KAB_KOTA.toLowerCase():
-        columnName = "kode_kk";
+        queryDB = `SELECT * FROM ${tableName} WHERE "kode_kk" LIKE "${fid}%"`;
         break;
       case FEATURE_TYPE.KECAMATAN.toLowerCase():
-        columnName = "kode_kec";
+        queryDB = `SELECT * FROM ${tableName} WHERE "kode_kec" LIKE "${fid}%"`;
         break;
       case FEATURE_TYPE.KEL_DESA.toLowerCase():
-        columnName = "kode_kd";
+        queryDB = `SELECT * FROM ${tableName} WHERE "kode_kd" LIKE "${fid}%"`;
         break;
       default:
         res.status(422).json({
@@ -63,30 +68,27 @@ export default async function handler(
     }
 
     try {
-      // Fetch from another server with large database
-      const response = await fetch(
-        `${API_BASE_URL}/download.php?fid=${fid}&table=${tableName}&column=${columnName}`
-      );
-      const resData: ResponseData = await response.json();
-      if (resData.code === 200 && Array.isArray(resData.data)) {
-        const size = new TextEncoder().encode(
-          JSON.stringify(resData.data)
-        ).length;
-        res.status(200).json({
-          code: 200,
-          message: "sucess",
-          data: resData.data,
-          meta: {
-            size: `${(size / 1024 / 1024).toFixed(4)} MB`,
-            count: resData.data.length,
-          },
+      mDB.serialize(function () {
+        mDB.all(queryDB, (err: any, rows: any[]) => {
+          if (!err && Array.isArray(rows)) {
+            const size = new TextEncoder().encode(JSON.stringify(rows)).length;
+            res.status(200).json({
+              code: 200,
+              message: "sucess",
+              data: rows,
+              meta: {
+                size: `${(size / 1024 / 1024).toFixed(4)} MB`,
+                count: rows.length,
+              },
+            });
+          } else {
+            res.status(500).json({
+              code: 500,
+              message: JSON.stringify(err),
+            });
+          }
         });
-      } else {
-        res.status(500).json({
-          code: 500,
-          message: JSON.stringify(resData),
-        });
-      }
+      });
     } catch (err) {
       res.status(500).json({
         code: 500,

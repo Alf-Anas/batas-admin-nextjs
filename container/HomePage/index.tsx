@@ -8,9 +8,9 @@ import {
 } from "@/pages/api/utils/geojson.interface";
 import useAPI from "@/hooks/useAPI";
 import API from "@/configs/api";
-import { getValObject } from "@/pages/api/utils";
-import { FEATURE_TYPE, getTypeFeature } from "@/utils/map";
+import { FEATURE_TYPE, getTypeFeature, getValObject } from "@/pages/api/utils";
 import DownloadButton from "./DownloadButton";
+import { getOneLevelDown } from "@/utils/map";
 
 export type MainContextType = {
   selected: Feature;
@@ -46,6 +46,7 @@ export default function HomePage() {
           : getValObject(selected.properties, "KODE_KD") ||
             selected.properties.FID ||
             "",
+      level: getOneLevelDown(typeFeature),
       type: typeFeature,
     });
   }, [selected]);
@@ -53,7 +54,6 @@ export default function HomePage() {
   useEffect(() => {
     if (!apiData.data) return;
     setPolygons(getValObject(apiData.data, "data", []));
-    const size = new TextEncoder().encode(JSON.stringify(apiData.data)).length;
   }, [apiData.data]);
 
   return (

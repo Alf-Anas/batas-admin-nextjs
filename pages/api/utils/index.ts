@@ -152,3 +152,39 @@ export function searchFuzzy(
 
   return sortingResults as unknown as Feature[];
 }
+
+export const FEATURE_TYPE = {
+  PROV: "PROV",
+  KAB_KOTA: "KAB_KOTA",
+  KECAMATAN: "KECAMATAN",
+  KEL_DESA: "KEL_DESA",
+};
+
+export function getTypeFeature(props: ObjectLiteral) {
+  if (props?.KEL_DESA) {
+    return FEATURE_TYPE.KEL_DESA;
+  } else if (props?.KECAMATAN) {
+    return FEATURE_TYPE.KECAMATAN;
+  } else if (props?.KAB_KOTA) {
+    return FEATURE_TYPE.KAB_KOTA;
+  } else if (props?.PROVINSI) {
+    return FEATURE_TYPE.PROV;
+  } else {
+    return "";
+  }
+}
+
+export function getLevelTable(level: string) {
+  switch (level.toLowerCase()) {
+    case FEATURE_TYPE.PROV.toLowerCase():
+      return "provinsi";
+    case FEATURE_TYPE.KAB_KOTA.toLowerCase():
+      return "kab_kota";
+    case FEATURE_TYPE.KECAMATAN.toLowerCase():
+      return "kecamatan";
+    case FEATURE_TYPE.KEL_DESA.toLowerCase():
+      return "kel_desa";
+    default:
+      return "";
+  }
+}

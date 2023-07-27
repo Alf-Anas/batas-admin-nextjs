@@ -11,10 +11,11 @@ const API = {
         name,
       },
     }),
-  getSearchId: ({ fid = "", type = "" }) =>
+  getSearchId: ({ fid = "", type = "", level = "" }) =>
     HOST.get(`api/search/${fid}`, {
       params: {
         type,
+        level,
       },
     }),
 };

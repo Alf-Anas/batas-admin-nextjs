@@ -86,7 +86,7 @@ export async function getBBOXDB() {
       if (err) {
         console.error(err.message);
       }
-      console.log("Connected to the my database.");
+      console.log("Connected to the bbox database.");
     });
 
     return db;

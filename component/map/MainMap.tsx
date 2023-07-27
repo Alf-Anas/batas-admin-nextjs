@@ -2,12 +2,14 @@ import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import maplibregl, { Map, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import classes from "./MainMap.module.css";
-import { getPolygonBoundingBox, propertiesTableDiv } from "@/utils/map";
+import {
+  getPolygonBoundingBox,
+  propertiesTableDiv,
+  wktToGeoJson,
+} from "@/utils/map";
 import { Spin } from "antd";
 import { INITIAL_MAP, LAYER_ID, LAYER_SRC, OSM_STYLE } from "./constant";
 import { MainContext } from "@/container/HomePage";
-import { parse as WKTParse } from "wellknown";
-import { getValObject } from "@/pages/api/utils";
 import * as turf from "@turf/turf";
 
 export default function MainMap({
@@ -150,26 +152,14 @@ export default function MainMap({
         LAYER_SRC.ADMIN_CENTROID
       );
       if (adminSource) {
-        const listPolygon = polygons.map((item) => {
-          const polygon = WKTParse(getValObject(item, "WKT_GEOMETRY", ""));
-          const { WKT_GEOMETRY, ogc_fid, ...props } = item;
-          return {
-            type: "Feature",
-            properties: props,
-            geometry: polygon,
-          };
-        });
+        const geoPolygon = wktToGeoJson(polygons, selected.properties.NAMA);
 
-        const mData = {
-          type: "FeatureCollection",
-          features: listPolygon,
-        };
         adminSource
           // @ts-ignore
-          .setData(mData);
+          .setData(geoPolygon.geojson);
 
         if (adminCentroidSource) {
-          const listCentroid = listPolygon.map((item) => {
+          const listCentroid = geoPolygon.listFeature.map((item) => {
             const center = turf.centerOfMass(item.geometry);
             return {
               ...center,
@@ -184,15 +174,7 @@ export default function MainMap({
             // @ts-ignore
             .setData(mDataPoint);
         }
-        setGeojson({
-          type: "FeatureCollection",
-          name: selected.properties.NAMA,
-          crs: {
-            type: "name",
-            properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
-          },
-          features: listPolygon,
-        });
+        setGeojson(geoPolygon.geojson);
       }
     }
   }, [polygons]);
