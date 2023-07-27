@@ -2,7 +2,7 @@ import { ROUTE } from "@/constant/route";
 import { Button, Dropdown, Menu } from "antd";
 import { useRouter } from "next/router";
 import { MenuOutlined } from "@ant-design/icons";
-import classes from "./Headernav.module.css";
+import classes from "./HeaderNav.module.css";
 
 const headerMenu = [
   {
