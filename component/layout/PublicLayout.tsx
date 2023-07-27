@@ -32,7 +32,7 @@ export default function PublicLayout({ children }: Props) {
       </Head>
       <LayoutANTD style={layoutStyle}>
         <Header style={{ paddingInline: "16px" }} id="public-layout-header">
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div
               className="logo"
               style={{
@@ -50,8 +50,8 @@ export default function PublicLayout({ children }: Props) {
               <Image
                 src="/logo.png"
                 alt="logo"
-                width={84}
-                height={39}
+                width={80}
+                height={36}
                 style={{
                   margin: "auto 4px auto 12px",
                 }}

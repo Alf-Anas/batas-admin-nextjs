@@ -1,0 +1,17 @@
+@media only screen and (max-width: 600px) {
+  .menu_button {
+    display: block;
+  }
+  .menu_nav {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .menu_nav {
+    display: block;
+  }
+  .menu_button {
+    display: none;
+  }
+}
