@@ -64,10 +64,29 @@ export default async function handler(
 
     try {
       // Fetch from another server with large database
-      res.status(200).json({
-        code: 200,
-        message: `${API_BASE_URL}/download.php?fid=${fid}&table=${tableName}&column=${columnName}`,
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/download.php?fid=${fid}&table=${tableName}&column=${columnName}`
+      );
+      const resData: ResponseData = await response.json();
+      if (resData.code === 200 && Array.isArray(resData.data)) {
+        const size = new TextEncoder().encode(
+          JSON.stringify(resData.data)
+        ).length;
+        res.status(200).json({
+          code: 200,
+          message: "sucess",
+          data: resData.data,
+          meta: {
+            size: `${(size / 1024 / 1024).toFixed(4)} MB`,
+            count: resData.data.length,
+          },
+        });
+      } else {
+        res.status(500).json({
+          code: 500,
+          message: JSON.stringify(resData),
+        });
+      }
     } catch (err) {
       res.status(500).json({
         code: 500,
