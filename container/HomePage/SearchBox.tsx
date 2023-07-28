@@ -15,7 +15,7 @@ const renderItem = (feature: Feature) => {
   return {
     key: props.FID,
     feature,
-    value: props.NAMA,
+    value: props.NAMA + "_" + props.FID,
     label: (
       <div>
         <div
@@ -44,6 +44,7 @@ const renderItem = (feature: Feature) => {
 export default function SearchBox() {
   const apiData = useAPI(API.getSearch);
   const [listOptions, setListOptions] = useState<any[]>([]);
+  const [text, setText] = useState<string>();
   const [term, setTerm] = useTermDebounce<string>();
   const { setSelected } = useContext(MainContext);
 
@@ -114,16 +115,25 @@ export default function SearchBox() {
   }
   function onSelect(_val: string, item: any) {
     setSelected(getValObject(item, "feature", {}));
+    setText(getValObject(item, "feature.properties.NAMA", {}));
   }
 
   return (
     <Form.Item className={classes.custom_search_box}>
-      <AutoComplete options={listOptions} onSelect={onSelect} listHeight={450}>
+      <AutoComplete
+        options={listOptions}
+        onSelect={onSelect}
+        listHeight={450}
+        value={text}
+      >
         <Input.Search
           size="large"
           placeholder="Cari..."
           onSearch={onSearch}
-          onChange={(ev) => setTerm(ev.target.value)}
+          onChange={(ev) => {
+            setTerm(ev.target.value);
+            setText(ev.target.value);
+          }}
           allowClear
           loading={apiData.loading}
         />

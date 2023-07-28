@@ -38,6 +38,9 @@ const API = {
         break;
       case FEATURE_TYPE.KEL_DESA.toLowerCase():
         columnName = "kode_kd";
+        if (typeof fid === "number") {
+          columnName = "fid";
+        }
         break;
       default:
         return;
